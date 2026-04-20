@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Koffie Chauffeur Examen</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Tahoma, sans-serif;
+      background-color: #e2caca;
+      color: #333;
+      padding: 2rem 1rem;
+    }
+    
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    
+    .header p {
+      font-size: 14px;
+      color: #666;
+    }
+    .timer-bar-container {
+      width: 100%;
+      height: 5px;
+      background-color: brown;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    
+    .timer-bar-fill {
+      height: 100%;
+      background-color: #00ff15;
+      width: 100%;
+      transition: width 15s linear;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    
+    .progress-bar {
+      display: none;
+    }
+    
+    .progress-fill {
+      display: none;
+    }
+    
+    .quiz-section {
+      display: none;
+      position: relative;
+    }
+    
+    .quiz-section.active {
+      display: block;
+      border: 1px solid #ddd;
+    }
+    
+    .question-counter {
+      font-size: 12px;
+      color: #999;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    
+    .question-image {
+      width: 100%;
+      height: 300px;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      object-fit: cover;
+      background-color: #f0f0f0;
+    }
+    
+    .question-text {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    
+    .answer-options {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .answer-btn {
+      flex: 1;
+      padding: 1rem;
+      border: 2px solid #ddd;
+      background: white;
+      font-size: 16px;
+      font-weight: bold;
+      font-family: Tahoma, sans-serif;
+      transition: all 0.2s;
+    }
+    
+    .answer-btn:hover {
+      border-color: #333;
+      background-color: #f9f9f9;
+    }
+    
+    .answer-btn.selected {
+      border-color: #333;
+      background-color: #333;
+      color: white;
+    }
+    
+.navigation {
+      display: none;
+    }
+    
+    .nav-btn {
+      display: none;
+    }
+    
+    .results-section {
+      display: none;
+    }
+    
+    .results-section.active {
+      display: block;
+    }
+    
+    .results-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 2rem;
+      background: white;
+      border: 1px solid #ddd;
+    }
+    
+    .score-display {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    
+    .score-text {
+      font-size: 16px;
+      color: #666;
+    }
+    
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .result-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      border: 1px solid #ddd;
+    }
+    
+    .result-card.wrong {
+      border: 10px solid #ff3b30;
+    }
+    
+    .result-number {
+      font-size: 12px;
+      color: #999;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    
+    .result-image {
+      width: 100%;
+      height: 150px;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      object-fit: cover;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .result-text {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    
+    .result-answer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      background-color: #f5f5f5;
+      border-radius: 6px;
+    }
+    
+    .answer-status {
+      font-size: 12px;
+      font-weight: bold;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+    }
+    
+    .answer-status.correct {
+      background-color: #34c759;
+      color: white;
+    }
+    
+    .answer-status.wrong {
+      background-color: #ff3b30;
+      color: white;
+    }
+    
+    .copy-box {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .copy-title {
+      font-size: 12px;
+      font-weight: bold;
+      color: #999;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    
+    .copy-content {
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      font-family: monospace;
+      font-size: 16px;
+      word-break: break-all;
+      user-select: all;
+      cursor: text;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .copy-content.empty {
+      color: #666;
+      font-family: Tahoma, sans-serif;
+    }
+    
+    .restart-btn {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      padding: 0.75rem;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: Tahoma, sans-serif;
+      transition: background-color 0.2s;
+    }
+    
+    .restart-btn:hover {
+      background-color: #555;
+    }
+    
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  
+  <div class="header">
+    <h1>Koffie Chauffeur Examen</h1>
+    <p>Beantwoord alle vragen en druk op "Afmaken" om je score te zien</p>
+  </div>
+
+  <!-- QUIZ SECTION -->
+  <div class="quiz-section active" id="quiz-section">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 10%"></div>
+    </div>
+    
+    <div class="question-card">
+      <div class="timer-bar-container">
+        <div class="timer-bar-fill" id="timer-bar-fill" style="width: 100%"></div>
+      </div>
+      <div class="question-counter" id="question-counter">Vraag 1 van 10</div>
+      <img class="question-image" id="question-image" src="" alt="Vraag afbeelding">
+      <div class="question-text" id="question-text"></div>
+      <div class="answer-options">
+        <button class="answer-btn" onclick="selectAnswer(true)">Waar</button>
+        <button class="answer-btn" onclick="selectAnswer(false)">Onwaar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS SECTION -->
+  <div class="results-section" id="results-section">
+    <div class="results-header">
+      <div class="score-display" id="score-display">0/10</div>
+      <div class="score-text">Je hebt <strong id="correct-text">0</strong> van de <strong>10</strong> vragen correct beantwoord</div>
+    </div>
+    
+    <div class="results-grid" id="results-container"></div>
+    
+    <div class="copy-box">
+      <div class="copy-title">Copy-paste naar document voor actieve herinnering</div>
+      <div class="copy-content" id="copy-content">Alle antwoorden zijn correct!</div>
+    </div>
+    
+    <button class="restart-btn" onclick="restartQuiz()">Opnieuw beginnen</button>
+  </div>
+
+</div>
+
+<script>
+let timerInterval = null;
+
+const questions = [
+  {
+    id: 1,
+    text: "Koffie helpt je sneller autorijden.",
+    correct: false,
+    image: "https://tenor.com/bNhxs.gif"
+  },
+  {
+    id: 2,
+    text: "Caffeine vermindert slaperigheid bij het rijden.",
+    correct: true,
+    image: "https://tenor.com/bNhxs.gif"
+  },
+  {
+    id: 3,
+    text: "Het kost 30 minuten voordat koffie je wakker maakt.",
+    correct: true,
+    image: "https://tenor.com/bNhxs.gif"
+  },
+  {
+    id: 4,
+    text: "Meer koffie drinken geeft je beter vermogen om auto te besturen.",
+    correct: false,
+    image: "https://tenor.com/bNhxs.gif"
+  },
+  {
+    id: 5,
+    text: "Koffie beïnvloedt je reactietijd niet.",
+    correct: false,
+    image: "https://tenor.com/bNhxs.gif"
+  },
+  {
+    id: 6,
+    text: "400mg caffeine per dag is veilig voor de meeste chauffeurs.",
+    correct: true,
+    image: "https://tenor.com/bNhxs.gif"
+  },
+  {
+    id: 7,
+    text: "Je kunt koffie beter drinken vóór je gaat autorijden.",
+    correct: true,
+    image: "https://tenor.com/bNhxs.gif"
+  },
+  {
+    id: 8,
+    text: "Koffie werkt beter dan slapen tegen vermoeidheid.",
+    correct: false,
+    image: "https://tenor.com/bNhxs.gif"
+  },
+  {
+    id: 9,
+    text: "Je mag maximaal 2 kopjes koffie drinken voordat je rijdt.",
+    correct: false,
+    image: "https://tenor.com/bNhxs.gif"
+  },
+  {
+    id: 10,
+    text: "Koffie kan je concentratie verbeteren tot 4 uur.",
+    correct: true,
+    image: "https://tenor.com/bNhxs.gif"
+  }
+];
+
+let currentQuestion = 0;
+let userAnswers = {};
+let timeRemaining = 15;
+
+function startTimer() {
+  // Clear any existing timer
+  if (timerInterval) clearInterval(timerInterval);
+  
+  timeRemaining = 15;
+  const timerBar = document.getElementById('timer-bar-fill');
+  
+  // Use CSS transition for smooth animation
+  timerBar.style.transition = 'none';
+  timerBar.style.width = '100%';
+  timerBar.textContent = '';
+  
+  // Trigger reflow to restart animation
+  void timerBar.offsetWidth;
+  
+  timerBar.style.transition = 'width 15s linear';
+  timerBar.style.width = '0%';
+  
+  // Auto-advance after 15 seconds
+  timerInterval = setTimeout(() => {
+    if (currentQuestion < 9) {
+      currentQuestion++;
+      showQuestion(currentQuestion);
+    } else {
+      showResults();
+    }
+  }, 15000);
+}
+
+function updateTimerDisplay() {
+  // Timer display handled by CSS animation
+}
+
+function showQuestion(index) {
+  const q = questions[index];
+  document.getElementById('question-counter').textContent = `Vraag ${index + 1} van 10`;
+  document.getElementById('question-image').src = q.image;
+  document.getElementById('question-text').textContent = q.text;
+  
+  // Start the timer for this question
+  startTimer();
+  
+  const buttons = document.querySelectorAll('.answer-btn');
+  buttons.forEach(btn => btn.classList.remove('selected'));
+  
+  if (userAnswers[q.id] !== undefined) {
+    buttons.forEach(btn => {
+      if ((btn.textContent === 'Waar' && userAnswers[q.id] === true) ||
+          (btn.textContent === 'Onwaar' && userAnswers[q.id] === false)) {
+        btn.classList.add('selected');
+      }
+    });
+  }
+}
+
+function selectAnswer(answer) {
+  const q = questions[currentQuestion];
+  userAnswers[q.id] = answer;
+  
+  const buttons = document.querySelectorAll('.answer-btn');
+  buttons.forEach(btn => btn.classList.remove('selected'));
+  
+  if (answer) {
+    buttons[0].classList.add('selected');
+  } else {
+    buttons[1].classList.add('selected');
+  }
+  
+  // Auto-advance after 1 second
+  setTimeout(() => {
+    if (timerInterval) clearTimeout(timerInterval);
+    if (currentQuestion < 9) {
+      currentQuestion++;
+      showQuestion(currentQuestion);
+    } else {
+      showResults();
+    }
+  }, 1000);
+}
+
+function nextQuestion() {
+  if (timerInterval) clearInterval(timerInterval);
+  if (currentQuestion < 9) {
+    currentQuestion++;
+    showQuestion(currentQuestion);
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  document.getElementById('quiz-section').classList.remove('active');
+  document.getElementById('results-section').classList.add('active');
+  
+  let correctCount = 0;
+  let wrongIds = [];
+  
+  questions.forEach(q => {
+    const isCorrect = userAnswers[q.id] === q.correct;
+    if (isCorrect) correctCount++;
+    else wrongIds.push(q.id);
+  });
+  
+  document.getElementById('score-display').textContent = `${correctCount}/10`;
+  document.getElementById('correct-text').textContent = correctCount;
+  
+  const resultsContainer = document.getElementById('results-container');
+  resultsContainer.innerHTML = '';
+  
+  questions.forEach(q => {
+    const isCorrect = userAnswers[q.id] === q.correct;
+    const card = document.createElement('div');
+    card.className = `result-card ${isCorrect ? '' : 'wrong'}`;
+    
+    card.innerHTML = `
+      <div class="result-number">Vraag ${q.id}</div>
+      <img class="result-image" src="${q.image}" alt="Vraag ${q.id}">
+      <div class="result-text">${q.text}</div>
+      <div class="result-answer">
+        <div>${userAnswers[q.id] ? 'Waar' : 'Onwaar'}</div>
+        <div class="answer-status ${isCorrect ? 'correct' : 'wrong'}">
+          ${isCorrect ? '✓ Correct' : '✗ Fout'}
+        </div>
+      </div>
+    `;
+    
+    resultsContainer.appendChild(card);
+  });
+  
+  const copyContent = document.getElementById('copy-content');
+  if (wrongIds.length === 0) {
+    copyContent.classList.add('empty');
+    copyContent.textContent = 'Alle antwoorden zijn correct!';
+  } else {
+    copyContent.classList.remove('empty');
+    copyContent.textContent = wrongIds.join(' - ') + ' - ';
+  }
+}
+
+function restartQuiz() {
+  if (timerInterval) clearTimeout(timerInterval);
+  currentQuestion = 0;
+  userAnswers = {};
+  document.getElementById('quiz-section').classList.add('active');
+  document.getElementById('results-section').classList.remove('active');
+  showQuestion(0);
+}
+
+showQuestion(0);
+</script>
+
+</body>
+</html>
